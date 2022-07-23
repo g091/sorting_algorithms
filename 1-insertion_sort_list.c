@@ -1,63 +1,54 @@
 #include "sort.h"
 /**
- * swap - swaps the elements of a d l list
- * @prev: previous element
- * @cu: current element
- */
-
-void swap(listint_t *prev, listint_t *cu)
-{
-	cu->prev = prev->prev;
-	prev->next = cu->next;
-	prev->prev = cu;
-	cu->next = prev;
-
-	if (cu->prev)
-		cu->prev->next = cu;
-	if (prev->next)
-		prev->next->prev = prev;
-}
-
-/**
- * insertion_sort_list - implementation of the insertion sort
- * @list: the list to sort
- * Return: void
+ * insertion_sort_list - sorts doubly linked list in ascending order using
+ * insertion sort
+ * @list: doubly linked list to sort
  */
 
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *cu, *first;
-	int i, c = 0;
+	listint_t *forw, *temp;
 
-	if (list == NULL || (*list) == NULL)
+	if (list == NULL || *list == NULL || (*list)->next == NULL)
 		return;
 
-	first = *list;
-	cu = *list;
-
-	while (cu != NULL)
+	for (forw = (*list)->next; forw && forw->prev; forw = forw->next)
 	{
-		c++;
-		while (cu->prev != NULL)
-			if (cu->n < cu->prev->n)
-			{
-				swap(cu->prev, cu);
-
-				if (cu->prev == NULL)
-				{
-					first = cu;
-					*list = first;
-				}
-
-				print_list(*list);
-			}
-			else
-				break;
-
-		for (i = 0; i < c; i++)
-			if (i == 0)
-				cu = first->next;
-			else
-				cu = cu->next;
+		for (; forw && forw->prev && forw->n < forw->prev->n;
+		     forw = forw->prev)
+		{
+			temp = forw->prev;
+			swap(list, temp, forw);
+			print_list(*list);
+			forw = forw->next;
+		}
 	}
+}
+
+/**
+ * swap - swaps 2 nodes
+ * @head: head node
+ * @node1: 1st node
+ * @node2: 2nd node
+ * Return: nothing
+ */
+
+void swap(listint_t **head, listint_t *node1, listint_t *node2)
+{
+	listint_t *prev, *next;
+
+	prev = node1->prev;
+	next = node2->next;
+
+	if (prev != NULL)
+		prev->next = node2;
+	else
+		*head = node2;
+
+	node1->prev = node2;
+	node1->next = next;
+	node2->prev = prev;
+	node2->next = node1;
+	if (next)
+		next->prev = node1;
 }
